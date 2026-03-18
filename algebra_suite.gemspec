@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name = "algebra_suite"
   spec.version = AlgebraSuite::VERSION
   spec.authors = ["ansavaa","Smiles-creator"]
-  spec.email = ["bulavinova07s@gmail.com"]
+  spec.email = ["почта Ани","bulavinova07s@gmail.com"]
 
   spec.summary = "Библиотека для упрощения булевой алгебры и операций с матрицами."
   spec.description = "Algebra Suite предоставляет инструменты для работы с булевыми выражениями и линейной алгеброй (матрицы)."
