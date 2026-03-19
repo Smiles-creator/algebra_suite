@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require "algebra_suite/matrix_operations"
 

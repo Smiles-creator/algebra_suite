@@ -1,8 +1,64 @@
 AllCops:
   TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false # Убираем подсказки про расширения
+  Exclude:
+    - 'vendor/**/*'
+    - 'bin/**/*'
+    - 'tmp/**/*'
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
-
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
+
+# --- НАСТРОЙКИ ДЛЯ ЛАБОРАТОРНОЙ (ПОБЛАЖКИ) ---
+
+# Разрешаем длинные методы (матрицы требуют много кода)
+Metrics/MethodLength:
+  Max: 40 
+  CountComments: false
+
+# Разрешаем длинные классы
+Metrics/ClassLength:
+  Max: 300
+  CountComments: false
+
+# Разрешаем высокую сложность (алгоритмы Гаусса и упрощения булевых выражений сложные)
+Metrics/CyclomaticComplexity:
+  Max: 20
+Metrics/PerceivedComplexity:
+  Max: 20
+Metrics/AbcSize:
+  Max: 60 # Было 30, подняли до 60 для матричных операций
+
+# Разрешаем короткие имена (l, r, i, j)
+Naming/MethodParameterName:
+  MinNameLength: 1
+  AllowedNames:
+    - l
+    - r
+    - i
+    - j
+    - a
+    - b
+    - x
+    - y
+    - m
+    - n
+
+# Отключаем требование документации (комментариев ###)
+Style/Documentation:
+  Enabled: false
+
+# Отключаем проверку super (безопасно для простых узлов)
+Lint/MissingSuper:
+  Enabled: false
+
+# Настройка концов строк под Windows
+Layout/EndOfLine:
+  EnforcedStyle: native
+
+# Разрешаем несколько классов тестов в одном файле (стандарт для Minitest)
+Style/OneClassPerFile:
+  Enabled: false
