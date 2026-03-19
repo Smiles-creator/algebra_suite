@@ -5,11 +5,11 @@ require_relative "lib/algebra_suite/version"
 Gem::Specification.new do |spec|
   spec.name = "algebra_suite"
   spec.version = AlgebraSuite::VERSION
-  spec.authors = ["ansavaa","Smiles-creator"]
-  spec.email = ["почта Ани","bulavinova07s@gmail.com"]
+  spec.authors = %w[ansavaa Smiles-creator]
+  spec.email = ["почта Ани", "bulavinova07s@gmail.com"]
 
   spec.summary = "Библиотека для упрощения булевой алгебры и операций с матрицами."
-  spec.description = "Algebra Suite предоставляет инструменты для работы с булевыми выражениями и линейной алгеброй (матрицы)."
+  spec.description = "Algebra Suite предоставляет инструменты для работы с булевыми выражениями и линейной алгеброй."
   spec.homepage = "https://github.com/Smiles-creator/algebra_suite"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
+  spec.metadata["rubygems_mfa_required"] = "true"
 end

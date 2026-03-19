@@ -9,7 +9,7 @@ module AlgebraSuite
     def initialize(elements)
       raise ArgumentError, "Vector must be an array" unless elements.is_a?(Array)
       raise ArgumentError, "Vector cannot be empty" if elements.empty?
-      raise ArgumentError, "Vector elements must be numbers" unless elements.all? { |x| x.is_a?(Numeric) }
+      raise ArgumentError, "Vector elements must be numbers" unless elements.all?(Numeric)
 
       @elements = elements.map(&:to_f)
     end
@@ -34,10 +34,10 @@ module AlgebraSuite
     end
 
     # Умножение вектора на число
-    def *(scalar)
-      raise ArgumentError, "Scalar must be a number" unless scalar.is_a?(Numeric)
+    def *(other)
+      raise ArgumentError, "Scalar must be a number" unless other.is_a?(Numeric)
 
-      Vector.new(@elements.map { |x| x * scalar })
+      Vector.new(@elements.map { |x| x * other })
     end
 
     # Скалярное произведение
@@ -61,12 +61,12 @@ module AlgebraSuite
 
     # Создание матрицы
     def initialize(rows)
-      raise ArgumentError, "Matrix must be an array of arrays" unless rows.is_a?(Array) && rows.all? { |r| r.is_a?(Array) }
+      raise ArgumentError, "Matrix must be an array of arrays" unless rows.is_a?(Array) && rows.all?(Array)
       raise ArgumentError, "Matrix cannot be empty" if rows.empty? || rows.any?(&:empty?)
 
       size = rows.first.size
       raise ArgumentError, "All rows must have same length" unless rows.all? { |r| r.size == size }
-      raise ArgumentError, "Matrix elements must be numbers" unless rows.flatten.all? { |x| x.is_a?(Numeric) }
+      raise ArgumentError, "Matrix elements must be numbers" unless rows.flatten.all?(Numeric)
 
       @rows = rows.map { |r| r.map(&:to_f) }
     end
@@ -88,7 +88,10 @@ module AlgebraSuite
 
     # Сложение матриц
     def +(other)
-      raise ArgumentError, "Matrices must have same dimensions" unless row_count == other.row_count && column_count == other.column_count
+      unless row_count == other.row_count && column_count == other.column_count
+        raise ArgumentError,
+              "Matrices must have same dimensions"
+      end
 
       result = @rows.each_index.map do |i|
         @rows[i].each_index.map do |j|
@@ -101,7 +104,10 @@ module AlgebraSuite
 
     # Вычитание матриц
     def -(other)
-      raise ArgumentError, "Matrices must have same dimensions" unless row_count == other.row_count && column_count == other.column_count
+      unless row_count == other.row_count && column_count == other.column_count
+        raise ArgumentError,
+              "Matrices must have same dimensions"
+      end
 
       result = @rows.each_index.map do |i|
         @rows[i].each_index.map do |j|
@@ -114,11 +120,12 @@ module AlgebraSuite
 
     # Универсальное умножение
     def *(other)
-      if other.is_a?(Numeric)
+      case other
+      when Numeric
         Matrix.new(@rows.map { |row| row.map { |x| x * other } })
-      elsif other.is_a?(Vector)
+      when Vector
         multiply_vector(other)
-      elsif other.is_a?(Matrix)
+      when Matrix
         multiply_matrix(other)
       else
         raise ArgumentError, "Unsupported multiplication"
@@ -162,12 +169,12 @@ module AlgebraSuite
       if row_count == 2
         a, b = @rows[0]
         c, d = @rows[1]
-        return a * d - b * c
+        return (a * d) - (b * c)
       end
 
       det = 0.0
       @rows[0].each_index do |j|
-        det += ((-1) ** j) * @rows[0][j] * minor(0, j).determinant
+        det += ((-1)**j) * @rows[0][j] * minor(0, j).determinant
       end
       det
     end
@@ -175,9 +182,9 @@ module AlgebraSuite
     # Минор матрицы
     def minor(i, j)
       Matrix.new(
-        @rows.each_with_index.map { |row, r|
+        @rows.each_with_index.map do |row, r|
           row.each_with_index.map { |x, c| x unless c == j } unless r == i
-        }.compact.map(&:compact)
+        end.compact.map(&:compact)
       )
     end
 

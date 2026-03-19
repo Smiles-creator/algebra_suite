@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 module AlgebraSuite
   # Базовый класс для всех узлов синтаксического дерева (AST).
-   # Определяет общий интерфейс для упрощения выражений.
+  # Определяет общий интерфейс для упрощения выражений.
 
   class BooleanNode
-
     def simplify
       self
     end
@@ -25,12 +26,12 @@ module AlgebraSuite
     end
   end
 
-
   class Not < BooleanNode
     attr_reader :operand
 
     def initialize(operand)
       raise ArgumentError, "Operand must be a BooleanNode" unless operand.is_a?(BooleanNode)
+
       @operand = operand
     end
 
@@ -42,29 +43,28 @@ module AlgebraSuite
       other.is_a?(Not) && @operand == other.operand
     end
 
-
     def simplify
       simplified_operand = @operand.simplify
-      
+
       # Двойное отрицание: NOT (NOT A) = A
       return simplified_operand.operand if simplified_operand.is_a?(Not)
-      
+
       # Отрицание констант
       if simplified_operand.is_a?(Variable)
-        return Variable.new('FALSE') if simplified_operand.name == 'TRUE'
-        return Variable.new('TRUE') if simplified_operand.name == 'FALSE'
+        return Variable.new("FALSE") if simplified_operand.name == "TRUE"
+        return Variable.new("TRUE") if simplified_operand.name == "FALSE"
       end
 
       Not.new(simplified_operand)
     end
   end
 
-
   class BinaryOperation < BooleanNode
     attr_reader :left, :right
 
     def initialize(left, right)
       raise ArgumentError, "Operands must be BooleanNodes" unless left.is_a?(BooleanNode) && right.is_a?(BooleanNode)
+
       @left = left
       @right = right
     end
@@ -84,15 +84,15 @@ module AlgebraSuite
       r = @right.simplify
 
       # Законы с константами
-      return Variable.new('FALSE') if contains_false?(l, r) # A AND FALSE = FALSE
+      return Variable.new("FALSE") if contains_false?(l, r) # A AND FALSE = FALSE
       return r if true?(l)                                  # TRUE AND A = A
       return l if true?(r)                                  # A AND TRUE = A
-      
+
       #  Идемпотентность: A AND A = A
       return l if l == r
-      
+
       # Противоречие: A AND (NOT A) = FALSE
-      return Variable.new('FALSE') if contradiction?(l, r)
+      return Variable.new("FALSE") if contradiction?(l, r)
 
       # Поглощение A AND (A OR B) => A
       # Проверка если один операнд равен ИЛИ содержит другой операнд
@@ -107,11 +107,11 @@ module AlgebraSuite
     private
 
     def contains_false?(l, r)
-      (l.is_a?(Variable) && l.name == 'FALSE') || (r.is_a?(Variable) && r.name == 'FALSE')
+      (l.is_a?(Variable) && l.name == "FALSE") || (r.is_a?(Variable) && r.name == "FALSE")
     end
 
     def true?(node)
-      node.is_a?(Variable) && node.name == 'TRUE'
+      node.is_a?(Variable) && node.name == "TRUE"
     end
 
     def contradiction?(l, r)
@@ -121,7 +121,7 @@ module AlgebraSuite
     # Проверка на случай поглощения: A AND (A OR B)
     def absorption_case?(l, r)
       (l.is_a?(Variable) && r.is_a?(Or)) || (r.is_a?(Variable) && l.is_a?(Or)) ||
-      (l.is_a?(And) && r.is_a?(Or)) || (r.is_a?(And) && l.is_a?(Or))
+        (l.is_a?(And) && r.is_a?(Or)) || (r.is_a?(And) && l.is_a?(Or))
     end
 
     # Проверяет, поглощает ли node_a выражение node_b
@@ -144,15 +144,15 @@ module AlgebraSuite
       r = @right.simplify
 
       # Законы с константами
-      return Variable.new('TRUE') if contains_true?(l, r)   # A OR TRUE = TRUE
+      return Variable.new("TRUE") if contains_true?(l, r)   # A OR TRUE = TRUE
       return r if false?(l)                                 # FALSE OR A = A
       return l if false?(r)                                 # A OR FALSE = A
-      
+
       # Идемпотентность: A OR A = A
       return l if l == r
-      
+
       # Тавтология: A OR (NOT A) = TRUE
-      return Variable.new('TRUE') if tautology?(l, r)
+      return Variable.new("TRUE") if tautology?(l, r)
 
       # Закон поглощения: A OR (A AND B) = A
       if absorption_case?(l, r)
@@ -170,11 +170,11 @@ module AlgebraSuite
     private
 
     def contains_true?(l, r)
-      (l.is_a?(Variable) && l.name == 'TRUE') || (r.is_a?(Variable) && r.name == 'TRUE')
+      (l.is_a?(Variable) && l.name == "TRUE") || (r.is_a?(Variable) && r.name == "TRUE")
     end
 
     def false?(node)
-      node.is_a?(Variable) && node.name == 'FALSE'
+      node.is_a?(Variable) && node.name == "FALSE"
     end
 
     def tautology?(l, r)
@@ -199,21 +199,13 @@ module AlgebraSuite
 
       # Варианты расположения общих частей:
       # Левые части равны, правые инверс: (A&B) | (A&!B)
-      if l.left == r.left && inverse_pair?(l.right, r.right)
-        return l.left
-      end
+      return l.left if l.left == r.left && inverse_pair?(l.right, r.right)
       # Правые части равны, левые инверс: (B&A) | (!B&A)
-      if l.right == r.right && inverse_pair?(l.left, r.left)
-        return l.right
-      end
+      return l.right if l.right == r.right && inverse_pair?(l.left, r.left)
       # Перекрестное совпадение: (A&B) | (!B&A)
-      if l.left == r.right && inverse_pair?(l.right, r.left)
-        return l.left
-      end
+      return l.left if l.left == r.right && inverse_pair?(l.right, r.left)
       # Перекрестное совпадение: (B&A) | (A&!B)
-      if l.right == r.left && inverse_pair?(l.left, r.right)
-        return l.right
-      end
+      return l.right if l.right == r.left && inverse_pair?(l.left, r.right)
 
       nil
     end
@@ -247,29 +239,29 @@ module AlgebraSuite
       @tokens = []
       expression.scan(/\w+|[()]/) do |match|
         token = match.upcase
-        case token
-        when 'AND', 'OR', 'NOT', 'TRUE', 'FALSE', '(', ')'
-          @tokens << token
-        else
-          @tokens << "VAR:#{token}"
-        end
+        @tokens << case token
+                   when "AND", "OR", "NOT", "TRUE", "FALSE", "(", ")"
+                     token
+                   else
+                     "VAR:#{token}"
+                   end
       end
     end
 
-    def current_token; @tokens[@pos]; end
+    def current_token = @tokens.[](@pos)
 
     def consume(expected = nil)
       token = current_token
-      raise SyntaxError, "Expected #{expected}, got #{token || 'END OF INPUT'}" if expected && token != expected
-      
+      raise SyntaxError, "Expected #{expected}, got #{token || "END OF INPUT"}" if expected && token != expected
+
       @pos += 1
       token
     end
 
     def parse_or
       left = parse_and
-      while current_token == 'OR'
-        consume('OR')
+      while current_token == "OR"
+        consume("OR")
         left = Or.new(left, parse_and)
       end
       left
@@ -277,17 +269,16 @@ module AlgebraSuite
 
     def parse_and
       left = parse_not
-      while current_token == 'AND'
-        consume('AND')
+      while current_token == "AND"
+        consume("AND")
         left = And.new(left, parse_not)
       end
       left
     end
 
-    
     def parse_not
-      if current_token == 'NOT'
-        consume('NOT')
+      if current_token == "NOT"
+        consume("NOT")
         return Not.new(parse_not)
       end
       parse_primary
@@ -297,20 +288,20 @@ module AlgebraSuite
       token = current_token
       raise SyntaxError, "Unexpected end of expression" if token.nil?
 
-      if token == '('
-        consume('(')
+      if token == "("
+        consume("(")
         expr = parse_or
-        consume(')')
+        consume(")")
         return expr
       end
 
-      if token&.start_with?('VAR:')
+      if token&.start_with?("VAR:")
 
         consume
-        return Variable.new(token.sub('VAR:', ''))
+        return Variable.new(token.sub("VAR:", ""))
       end
 
-      if ['TRUE', 'FALSE'].include?(token)
+      if %w[TRUE FALSE].include?(token)
         consume
         return Variable.new(token)
       end
@@ -322,7 +313,6 @@ module AlgebraSuite
   # Исключение, возникающее при синтаксической ошибке во входном выражении
   class SyntaxError < StandardError; end
 
- 
   # Принимает строку, парсит её, упрощает дерево и возвращает результат строкой.
   class BooleanSimplifier
     def self.simplify_expression(expression_string)
@@ -331,10 +321,11 @@ module AlgebraSuite
       return "" if ast.nil?
 
       simplified_ast = ast.simplify
-      
+
       loop do
         next_ast = simplified_ast.simplify
         break if next_ast.to_s == simplified_ast.to_s
+
         simplified_ast = next_ast
       end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "test_helper"
 require "algebra_suite/boolean_simplifier"
 
@@ -45,12 +47,12 @@ class TestBooleanStructure < Minitest::Test
     assert_equal a, node.left
     assert_equal b, node.right
   end
-  
+
   def test_invalid_operand
     assert_raises(ArgumentError) do
       Not.new("string instead of node")
     end
-    
+
     assert_raises(ArgumentError) do
       And.new(Variable.new("A"), "B")
     end
@@ -134,7 +136,7 @@ class TestBooleanParser < Minitest::Test
     assert_instance_of Or, ast.left
     assert_equal "((A OR B) AND C)", ast.to_s
   end
-  
+
   def test_parse_complex
     parser = Parser.new
     ast = parser.parse("A AND (NOT B OR C)")
@@ -159,7 +161,7 @@ class TestBooleanParser < Minitest::Test
     assert_raises(SyntaxError) do
       parser.parse("A AND")
     end
-    
+
     assert_raises(SyntaxError) do
       parser.parse("AND B")
     end
@@ -190,7 +192,7 @@ class TestBooleanSimplification < Minitest::Test
     assert_equal "A", BooleanSimplifier.simplify_expression("A")
   end
 
-  #  Законы с константами and 
+  #  Законы с константами and
   def test_simplify_and_with_true
     assert_equal "A", BooleanSimplifier.simplify_expression("A AND TRUE")
     assert_equal "A", BooleanSimplifier.simplify_expression("TRUE AND A")
@@ -201,7 +203,7 @@ class TestBooleanSimplification < Minitest::Test
     assert_equal "FALSE", BooleanSimplifier.simplify_expression("FALSE AND A")
   end
 
-  #  Законы с константами or 
+  #  Законы с константами or
   def test_simplify_or_with_true
     assert_equal "TRUE", BooleanSimplifier.simplify_expression("A OR TRUE")
     assert_equal "TRUE", BooleanSimplifier.simplify_expression("TRUE OR A")
@@ -212,7 +214,7 @@ class TestBooleanSimplification < Minitest::Test
     assert_equal "A", BooleanSimplifier.simplify_expression("FALSE OR A")
   end
 
-  #  Идемпотентность 
+  #  Идемпотентность
   def test_simplify_idempotent_and
     assert_equal "A", BooleanSimplifier.simplify_expression("A AND A")
   end
@@ -221,7 +223,7 @@ class TestBooleanSimplification < Minitest::Test
     assert_equal "A", BooleanSimplifier.simplify_expression("A OR A")
   end
 
-  #  Отрицание и двойное отрицание 
+  #  Отрицание и двойное отрицание
   def test_simplify_double_not
     assert_equal "A", BooleanSimplifier.simplify_expression("NOT NOT A")
     assert_equal "A", BooleanSimplifier.simplify_expression("NOT NOT NOT NOT A")
@@ -232,7 +234,7 @@ class TestBooleanSimplification < Minitest::Test
     assert_equal "TRUE", BooleanSimplifier.simplify_expression("NOT FALSE")
   end
 
-  #  Противоречие и Тавтология 
+  #  Противоречие и Тавтология
   def test_simplify_contradiction
     assert_equal "FALSE", BooleanSimplifier.simplify_expression("A AND (NOT A)")
     assert_equal "FALSE", BooleanSimplifier.simplify_expression("(NOT A) AND A")
@@ -243,7 +245,7 @@ class TestBooleanSimplification < Minitest::Test
     assert_equal "TRUE", BooleanSimplifier.simplify_expression("(NOT A) OR A")
   end
 
-  #  Закон поглощения  
+  #  Закон поглощения
   def test_simplify_absorption_or
     assert_equal "A", BooleanSimplifier.simplify_expression("A OR (A AND B)")
     assert_equal "A", BooleanSimplifier.simplify_expression("A OR (B AND A)")
@@ -255,17 +257,17 @@ class TestBooleanSimplification < Minitest::Test
     assert_equal "A", BooleanSimplifier.simplify_expression("A AND (B OR A)")
   end
 
-  #  Правило склеивания 
+  #  Правило склеивания
   def test_simplify_adjacency
     # (A AND B) OR (A AND NOT B) = A
     assert_equal "A", BooleanSimplifier.simplify_expression("(A AND B) OR (A AND NOT B)")
     assert_equal "A", BooleanSimplifier.simplify_expression("(A AND NOT B) OR (A AND B)")
-    
+
     # Варианты с перестановкой операндов внутри AND
     assert_equal "A", BooleanSimplifier.simplify_expression("(B AND A) OR (NOT B AND A)")
   end
 
-  #  Сложные составные выражения 
+  #  Сложные составные выражения
   def test_simplify_complex_cascade
     # Несколько применений правил подряд
     assert_equal "A", BooleanSimplifier.simplify_expression("NOT NOT A AND TRUE")
