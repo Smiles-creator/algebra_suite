@@ -5,7 +5,7 @@ require_relative 'lib/algebra_suite/boolean_simplifier'
 
 #ПОДКЛЮЧАЕМ МАРШРУТЫ
 require_relative 'routes/boolean_routes'
-# require_relative 'routes/matrix_routes'
+require_relative 'routes/matrix_routes'
 
 # Настройки
 set :bind, '0.0.0.0'
