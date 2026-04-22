@@ -12,27 +12,13 @@ set :bind, '0.0.0.0'
 set :port, 4567
 set :protection, :except => :json_csrf
 
-before do
-  content_type :json
-end
+#before do
+ # content_type :json
+#end
 
 # ГЛАВНАЯ СТРАНИЦА
 get '/' do
-  {
-    status: 'ok',
-    message: 'Algebra Bot API',
-    version: '1.0.0',
-    endpoints: {
-      boolean: {
-        simplify: 'POST /api/simplify',
-        validate: 'POST /api/validate',
-        laws: 'GET /api/boolean/laws'
-      },
-      matrix: {
-        
-      }
-    }
-  }.to_json
+  erb :index  # Ищет файл views/index.erb
 end
 
 #ОБРАБОТКА ОШИБОК
