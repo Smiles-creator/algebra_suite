@@ -14,3 +14,5 @@ gem "rubocop", "~> 1.21"
 gem "simplecov", require: false
 gem 'sinatra', '~> 3.1'
 gem 'puma', '~> 6.0'
+gem "ostruct"
+gem "logger"
